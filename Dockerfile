@@ -8,5 +8,3 @@ ADD . $CODE_HOME
 WORKDIR $CODE_HOME
 
 RUN go build
-CMD "./gonna_meet_you_halfway_golang"
-
