@@ -1,15 +1,26 @@
 package main
 
-import "github.com/gorilla/mux"
-import "net/http"
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+
+	"github.com/gorilla/mux"
+)
+
+type fallibleHandler func(w http.ResponseWriter, r *http.Request) error
 
 func main() {
+	h := Handler{}
 	r := mux.NewRouter()
-	r.HandleFunc("/", handler).Methods("GET")
+	r.HandleFunc("/start", catchError(h.start)).Methods("GET")
 	http.ListenAndServe(":8080", r)
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello World 2!")
+func catchError(fn fallibleHandler) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := fn(w, r); err != nil {
+			fmt.Println(err)
+			http.Error(w, "You broke the internet 🐮💩😱", http.StatusInternalServerError)
+		}
+	}
 }
