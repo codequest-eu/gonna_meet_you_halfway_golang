@@ -12,7 +12,7 @@ type fallibleHandler func(w http.ResponseWriter, r *http.Request) error
 func main() {
 	h := Handler{}
 	r := mux.NewRouter()
-	r.HandleFunc("/start", catchError(h.start)).Methods("GET")
+	r.HandleFunc("/start", catchError(h.start)).Methods("POST")
 	http.ListenAndServe(":8080", r)
 }
 
