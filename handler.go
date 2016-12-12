@@ -7,13 +7,14 @@ import (
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/storage"
 	"github.com/satori/go.uuid"
 )
 
 type Handler struct {
 	mailer      mailer.Mailer
 	broadcaster broadcaster.Broadcaster
-	// store  store.Store
+	store       storage.Store
 }
 
 func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {

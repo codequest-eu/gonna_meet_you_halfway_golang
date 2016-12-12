@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 
-	"log"
-
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/storage"
 	"github.com/gorilla/mux"
 )
 
@@ -26,7 +26,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	h := Handler{mailer: m, broadcaster: b}
+	projectID := os.Getenv("DATASTORE_PROJECT_ID")
+	s, err := storage.NewGoogleStorage("datastore.key", projectID)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := Handler{mailer: m, broadcaster: b, store: s}
 	r := mux.NewRouter()
 	r.HandleFunc("/start", catchError(h.start)).Methods("POST")
 	http.ListenAndServe(":8080", r)

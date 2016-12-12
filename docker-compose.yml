@@ -1,7 +1,9 @@
 app:
     build: .
-    command: './gonna_meet_you_halfway_golang'
+    command: './setup.sh ./gonna_meet_you_halfway_golang'
     ports:
         - '8080:8080'
     env_file: .env
+    environment:
+      - GODEBUG=netdns=go # Looks like a bug in Alpine Linux?
     container_name: 'halfway'
