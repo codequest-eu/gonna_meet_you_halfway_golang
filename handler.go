@@ -4,13 +4,15 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
 	"github.com/satori/go.uuid"
 )
 
 type Handler struct {
-	mailer mailer.Mailer
+	mailer      mailer.Mailer
+	broadcaster broadcaster.Broadcaster
 	// store  store.Store
 }
 

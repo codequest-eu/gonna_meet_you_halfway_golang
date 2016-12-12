@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"log"
+
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/gorilla/mux"
 )
@@ -13,7 +16,17 @@ type fallibleHandler func(w http.ResponseWriter, r *http.Request) error
 
 func main() {
 	m := mailer.NewSendGridMailer(os.Getenv("SENDGRID_API_KEY"))
-	h := Handler{mailer: m}
+
+	host := os.Getenv("MQTT_BROKER_HOST")
+	user := os.Getenv("MQTT_BROKER_USER")
+	pass := os.Getenv("MQTT_BROKER_PASSWORD")
+	b, err := broadcaster.NewMQTTBroadcaster(host, user, pass)
+	defer b.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	h := Handler{mailer: m, broadcaster: b}
 	r := mux.NewRouter()
 	r.HandleFunc("/start", catchError(h.start)).Methods("POST")
 	http.ListenAndServe(":8080", r)
