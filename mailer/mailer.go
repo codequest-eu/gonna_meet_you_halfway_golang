@@ -1,5 +1,5 @@
 package mailer
 
 type Mailer interface {
-	Mail(adress string)
+	Mail(tEmail string, sName string, sEmail string) error
 }
