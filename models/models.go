@@ -6,6 +6,11 @@ type StartData struct {
 	OtherEmail string `json:"otherEmail"`
 }
 
+type NewMeeting struct {
+	Identifier string `json:"meetingIdentifier"`
+	Topics     Topics `json:"topics"`
+}
+
 type Topics struct {
 	SuggestionsTopicName     string `json:"suggestionsTopicName"`
 	MyLocationTopicName      string `json:"myLocationTopicName"`
