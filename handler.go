@@ -18,10 +18,10 @@ func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	t := models.Topics{
-		suggestionsTopicName:     "suggestionsTopicName",
-		myLocationTopicName:      "myLocationTopicName",
-		otherLocationTopicName:   "otherLocationTopicName",
-		meetingLocationTopicName: "meetingLocationTopicName",
+		SuggestionsTopicName:     "suggestionsTopicName",
+		MyLocationTopicName:      "myLocationTopicName",
+		OtherLocationTopicName:   "otherLocationTopicName",
+		MeetingLocationTopicName: "meetingLocationTopicName",
 	}
 	return json.NewEncoder(w).Encode(t)
 }
