@@ -3,6 +3,8 @@ package storage
 import (
 	"io/ioutil"
 
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
+
 	"cloud.google.com/go/datastore"
 	"golang.org/x/net/context"
 	"golang.org/x/oauth2/google"
@@ -35,4 +37,17 @@ func NewGoogleStorage(keyPath string, projectID string) (Store, error) {
 		return nil, err
 	}
 	return &googleStorage{client}, nil
+}
+
+func (gs *googleStorage) SaveTopics(meetingID string, topics models.Topics) error {
+	_, err := gs.client.Put(context.Background(), keyFor("Topics", meetingID, nil), &topics)
+	return err
+}
+
+func keyFor(kind string, hashID string, parent *datastore.Key) *datastore.Key {
+	return datastore.NameKey(
+		kind,   // kind
+		hashID, // name
+		parent, // parent
+	)
 }

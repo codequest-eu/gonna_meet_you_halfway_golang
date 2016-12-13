@@ -25,10 +25,15 @@ func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 	if err := h.mailer.Mail(sd.Email, sd.Name, sd.OtherEmail); err != nil {
 		return err
 	}
-	t := h.generateTopics()
+	meetingID := uuid.NewV4().String()
+	topics := h.generateTopics()
+	if err := h.store.SaveTopics(meetingID, topics); err != nil {
+		return err
+	}
+
 	meeting := models.NewMeeting{
-		Identifier: uuid.NewV4().String(),
-		Topics:     t,
+		Identifier: meetingID,
+		Topics:     topics,
 	}
 	return json.NewEncoder(w).Encode(meeting)
 }
