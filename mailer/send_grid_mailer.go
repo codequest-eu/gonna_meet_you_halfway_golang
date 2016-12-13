@@ -2,6 +2,9 @@ package mailer
 
 import (
 	"log"
+
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
+	"github.com/codequest-eu/gonna_meet_you_halfway_golang/util"
 	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -22,22 +25,26 @@ func NewSendGridMailer(key string) Mailer {
 	return &sendGridMailer{r}
 }
 
-func (sgm *sendGridMailer) Mail(tEmail string, sName string, sEmail string) error {
+func (sgm *sendGridMailer) Mail(inviteData models.InviteData, meetingID string) error {
 	request := sgm.request
-	request.Body = sgm.buildInviteMail(tEmail, sName, sEmail)
+	sEmail := inviteData.Email
+	tEmail := inviteData.OtherEmail
+	sName := inviteData.Name
+	request.Body = sgm.buildInviteMail(sEmail, sName, tEmail, meetingID)
 	response, err := sendgrid.API(request)
 	if err != nil {
 		log.Println(err)
-		return  err
+		return err
 	}
 	log.Println("Mail from" + sEmail + " to " + tEmail + " sent with: " + response.Body)
 	return nil
 }
 
-func (sgm *sendGridMailer) buildInviteMail(tEmail string, sName string, sEmail string) []byte {
+func (sgm *sendGridMailer) buildInviteMail(tEmail string, sName string, sEmail string, meetingID string) []byte {
 	from := mail.NewEmail("[Half Way]", "support@halfway.io")
 	to := mail.NewEmail("", tEmail)
-	content := mail.NewContent("text/html", "<p>Your friend " + sName + " (" + sEmail + ") want you to meet with you.</p><p>Use this <a href= >link</a> find best place to see him/her</p><br />")
+	invitePath := util.InvitePath(meetingID)
+	content := mail.NewContent("text/html", "<p>Your friend "+sName+" ("+sEmail+") want you to meet with you.</p><p>Use this <a href="+invitePath+">link</a> find best place to see him/her</p><br />")
 	subject := "[Half Way] Let's meet!!!"
 	m := mail.NewV3MailInit(from, subject, to, content)
 	return mail.GetRequestBody(m)

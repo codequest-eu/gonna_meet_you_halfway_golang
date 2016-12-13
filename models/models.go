@@ -1,6 +1,6 @@
 package models
 
-type StartData struct {
+type InviteData struct {
 	Name       string `json:"name"`
 	Email      string `json:"email"`
 	OtherEmail string `json:"otherEmail"`

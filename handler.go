@@ -18,19 +18,18 @@ type Handler struct {
 }
 
 func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
-	var sd models.StartData
-	if err := json.NewDecoder(r.Body).Decode(&sd); err != nil {
-		return err
-	}
-	if err := h.mailer.Mail(sd.Email, sd.Name, sd.OtherEmail); err != nil {
+	var inviteData models.InviteData
+	if err := json.NewDecoder(r.Body).Decode(&inviteData); err != nil {
 		return err
 	}
 	meetingID := uuid.NewV4().String()
+	if err := h.mailer.Mail(inviteData, meetingID); err != nil {
+		return err
+	}
 	topics := h.generateTopics()
 	if err := h.store.SaveTopics(meetingID, topics); err != nil {
 		return err
 	}
-
 	meeting := models.NewMeeting{
 		Identifier: meetingID,
 		Topics:     topics,

@@ -1,5 +1,7 @@
 package mailer
 
+import "github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
+
 type Mailer interface {
-	Mail(tEmail string, sName string, sEmail string) error
+	Mail(inviteData models.InviteData, meetingID string) error
 }
