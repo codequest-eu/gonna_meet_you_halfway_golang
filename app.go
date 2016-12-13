@@ -35,6 +35,7 @@ func main() {
 	h := Handler{mailer: m, broadcaster: b, store: s}
 	r := mux.NewRouter()
 	r.HandleFunc("/start", catchError(h.start)).Methods("POST")
+	r.HandleFunc("/accept/{meetingID}", catchError(h.accept)).Methods("GET")
 	http.ListenAndServe(":8080", r)
 }
 

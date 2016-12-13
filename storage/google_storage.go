@@ -44,6 +44,11 @@ func (gs *googleStorage) SaveTopics(meetingID string, topics models.Topics) erro
 	return err
 }
 
+func (gs *googleStorage) GetTopics(meetingID string) (models.Topics, error) {
+	var topics models.Topics
+	return topics, gs.client.Get(context.Background(), keyFor("Topics", meetingID, nil), &topics)
+}
+
 func keyFor(kind string, hashID string, parent *datastore.Key) *datastore.Key {
 	return datastore.NameKey(
 		kind,   // kind

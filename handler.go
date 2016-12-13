@@ -8,6 +8,7 @@ import (
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/storage"
+	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
 )
 
@@ -37,11 +38,34 @@ func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 	return json.NewEncoder(w).Encode(meeting)
 }
 
+func (h *Handler) accept(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	meetingID := vars["meetingID"]
+	topics, err := h.store.GetTopics(meetingID)
+	if err != nil {
+		return err
+	}
+	meeting := models.NewMeeting{
+		Identifier: meetingID,
+		Topics:     h.swapTopicsForOtherDevice(topics),
+	}
+	return json.NewEncoder(w).Encode(meeting)
+}
+
 func (h *Handler) generateTopics() models.Topics {
 	return models.Topics{
 		SuggestionsTopicName:     uuid.NewV4().String(),
 		MyLocationTopicName:      uuid.NewV4().String(),
 		OtherLocationTopicName:   uuid.NewV4().String(),
 		MeetingLocationTopicName: uuid.NewV4().String(),
+	}
+}
+
+func (h *Handler) swapTopicsForOtherDevice(topics models.Topics) models.Topics {
+	return models.Topics{
+		topics.SuggestionsTopicName,
+		topics.OtherLocationTopicName,
+		topics.MyLocationTopicName,
+		topics.MeetingLocationTopicName,
 	}
 }
