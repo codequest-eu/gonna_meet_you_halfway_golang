@@ -49,6 +49,16 @@ func (gs *googleStorage) GetTopics(meetingID string) (models.Topics, error) {
 	return topics, gs.client.Get(context.Background(), keyFor("Topics", meetingID, nil), &topics)
 }
 
+func (gs *googleStorage) GetMeetingSuggestion(meetingID string) (models.MeetingSuggestion, error) {
+	var meetingSuggestion models.MeetingSuggestion
+	return meetingSuggestion, gs.client.Get(context.Background(), keyFor("MeetingSuggestion", meetingID, nil), &meetingSuggestion)
+}
+
+func (gs *googleStorage) SaveMeetingSuggestion(meetingID string, meetingSuggestion models.MeetingSuggestion) error {
+	_, err := gs.client.Put(context.Background(), keyFor("MeetingSuggestion", meetingID, nil), &meetingSuggestion)
+	return err
+}
+
 func keyFor(kind string, hashID string, parent *datastore.Key) *datastore.Key {
 	return datastore.NameKey(
 		kind,   // kind
