@@ -45,14 +45,6 @@ func (mq *mqttBroadcaster) Close() error {
 	return nil
 }
 
-func (mq *mqttBroadcaster) SubscribeMeetingSuggestion(topic string) error {
-	token := mq.client.Subscribe(topic, byte(1), subHander)
-	if token.Wait() && token.Error() != nil {
-		return token.Error()
-	}
-	return nil
-}
-
 //Publish message
 func (mq *mqttBroadcaster) PublishMeetingSuggestion(sugestion models.MeetingSuggestion, topic string) error {
 	message, err := json.Marshal(sugestion)

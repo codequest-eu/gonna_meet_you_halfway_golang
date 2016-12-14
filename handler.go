@@ -86,10 +86,6 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	if err := h.broadcaster.SubscribeMeetingSuggestion(topics.SuggestionsTopicName); err != nil {
-		return err
-	}
-
 	if err := h.broadcaster.PublishMeetingSuggestion(meetingSuggestion, topics.SuggestionsTopicName); err != nil {
 		return err
 	}

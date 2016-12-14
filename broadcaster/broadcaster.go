@@ -10,5 +10,4 @@ import (
 type Broadcaster interface {
 	io.Closer
 	PublishMeetingSuggestion(sugestion models.MeetingSuggestion, topic string) error
-	SubscribeMeetingSuggestion(topic string) error
 }

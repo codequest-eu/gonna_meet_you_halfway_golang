@@ -26,7 +26,7 @@ type Topics struct {
 
 type MeetingSuggestion struct {
 	LocationA Position `json:"locationA"`
-	LocationB Position `json:"locationA"`
+	LocationB Position `json:"locationB"`
 	Center    Position `json:"center"`
 	Venues    []Venue  `json:"venues"`
 }
