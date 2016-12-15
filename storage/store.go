@@ -8,4 +8,7 @@ type Store interface {
 
 	SaveMeetingSuggestion(meetingID string, meetingSuggestion models.MeetingSuggestion) error
 	GetMeetingSuggestion(meetingID string) (models.MeetingSuggestion, error)
+
+	SavePlaceSuggestion(meetingID string, placeSuggestion models.PlaceSuggestion) error
+	GetPlaceSuggestion(placeSuggestionID string) (models.PlaceSuggestion, error)
 }

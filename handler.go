@@ -86,7 +86,7 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	if err := h.broadcaster.PublishMeetingSuggestion(meetingSuggestion, topics.SuggestionsTopicName); err != nil {
+	if err := h.broadcaster.Publish(meetingSuggestion, topics.SuggestionsTopicName); err != nil {
 		return err
 	}
 
@@ -95,6 +95,52 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		Topics:     h.swapTopicsForOtherDevice(topics),
 	}
 	return json.NewEncoder(w).Encode(meeting)
+}
+
+func (h *Handler) suggestMeetingLocation(w http.ResponseWriter, r *http.Request) error {
+	var placeSuggestion models.PlaceSuggestion
+	if err := json.NewDecoder(r.Body).Decode(&placeSuggestion); err != nil {
+		return err
+	}
+	meetingID := placeSuggestion.MeetingIdentifier
+	placeSuggestion.SetPlaceIdentifier(uuid.NewV4().String())
+	if err := h.store.SavePlaceSuggestion(meetingID, placeSuggestion); err != nil {
+		return err
+	}
+	topics, err := h.store.GetTopics(meetingID)
+	if err != nil {
+		return err
+	}
+	if err := h.broadcaster.Publish(placeSuggestion, topics.SuggestionsTopicName); err != nil {
+		return err
+	}
+
+	w.WriteHeader(http.StatusOK)
+	return nil
+}
+
+func (h *Handler) acceptMeetingLocation(w http.ResponseWriter, r *http.Request) error {
+	var placeAcceptance map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&placeAcceptance); err != nil {
+		return err
+	}
+	placeSuggestionID := placeAcceptance["identifier"]
+	placeSuggestion, err := h.store.GetPlaceSuggestion(placeSuggestionID)
+	if err != nil {
+		return err
+	}
+	placeSuggestion.SetAccepted(true)
+
+	meetingID := placeSuggestion.MeetingIdentifier
+	topics, err := h.store.GetTopics(meetingID)
+	if err != nil {
+		return err
+	}
+	if err := h.broadcaster.Publish(placeSuggestion, topics.MeetingLocationTopicName); err != nil {
+		return err
+	}
+	w.WriteHeader(http.StatusOK)
+	return nil
 }
 
 func (h *Handler) generateTopics() models.Topics {

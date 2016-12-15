@@ -39,14 +39,14 @@ func NewGoogleStorage(keyPath string, projectID string) (Store, error) {
 	return &googleStorage{client}, nil
 }
 
-func (gs *googleStorage) SaveTopics(meetingID string, topics models.Topics) error {
-	_, err := gs.client.Put(context.Background(), keyFor("Topics", meetingID, nil), &topics)
-	return err
-}
-
 func (gs *googleStorage) GetTopics(meetingID string) (models.Topics, error) {
 	var topics models.Topics
 	return topics, gs.client.Get(context.Background(), keyFor("Topics", meetingID, nil), &topics)
+}
+
+func (gs *googleStorage) SaveTopics(meetingID string, topics models.Topics) error {
+	_, err := gs.client.Put(context.Background(), keyFor("Topics", meetingID, nil), &topics)
+	return err
 }
 
 func (gs *googleStorage) GetMeetingSuggestion(meetingID string) (models.MeetingSuggestion, error) {
@@ -56,6 +56,18 @@ func (gs *googleStorage) GetMeetingSuggestion(meetingID string) (models.MeetingS
 
 func (gs *googleStorage) SaveMeetingSuggestion(meetingID string, meetingSuggestion models.MeetingSuggestion) error {
 	_, err := gs.client.Put(context.Background(), keyFor("MeetingSuggestion", meetingID, nil), &meetingSuggestion)
+	return err
+}
+
+func (gs *googleStorage) GetPlaceSuggestion(placeSuggestionID string) (models.PlaceSuggestion, error) {
+	var placeSuggestion []models.PlaceSuggestion
+	q := datastore.NewQuery("PlaceSuggestion").Filter("PlaceIdentifier=", placeSuggestionID).Limit(1)
+	_, err := gs.client.GetAll(context.Background(), q, &placeSuggestion)
+	return placeSuggestion[0], err
+}
+
+func (gs *googleStorage) SavePlaceSuggestion(meetingID string, placeSuggestion models.PlaceSuggestion) error {
+	_, err := gs.client.Put(context.Background(), keyFor("PlaceSuggestion", meetingID, nil), &placeSuggestion)
 	return err
 }
 

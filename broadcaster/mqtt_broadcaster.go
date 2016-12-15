@@ -3,8 +3,8 @@ package broadcaster
 import (
 	"encoding/json"
 	"log"
+	"os"
 
-	"github.com/codequest-eu/gonna_meet_you_halfway_golang/models"
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -19,18 +19,14 @@ var handler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
 	log.Printf("MSG: %s\n", msg.Payload())
 }
 
-var subHander mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	log.Printf("TOPIC: %s\n", msg.Topic())
-	log.Printf("MSG: %s\n", msg.Payload())
-}
-
 //NewMQTTBroadcaster is a constructor of MQTTBroadcaster struct
 func NewMQTTBroadcaster(broker string, user string, pass string) (Broadcaster, error) {
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(broker)
 	opts.SetUsername(user)
 	opts.SetPassword(pass)
-	opts.SetClientID("half-way-server")
+	opts.SetClientID("half-way-server-" + os.Getenv("HOST"))
+	opts.SetCleanSession(true)
 	opts.SetDefaultPublishHandler(handler)
 	c := mqtt.NewClient(opts)
 	if token := c.Connect(); token.Wait() && token.Error() != nil {
@@ -46,8 +42,8 @@ func (mq *mqttBroadcaster) Close() error {
 }
 
 //Publish message
-func (mq *mqttBroadcaster) PublishMeetingSuggestion(sugestion models.MeetingSuggestion, topic string) error {
-	message, err := json.Marshal(sugestion)
+func (mq *mqttBroadcaster) Publish(v interface{}, topic string) error {
+	message, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}

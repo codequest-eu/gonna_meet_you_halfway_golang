@@ -52,3 +52,20 @@ type Venue struct {
 	Name     string   `json:"name"`
 	Location Position `json:"position"`
 }
+
+type PlaceSuggestion struct {
+	MeetingIdentifier string   `json:"meetingIdentifier"`
+	PlaceIdentifier   string   `json:"placeIdentifier"`
+	Name              string   `json:"name"`
+	Description       string   `json:"description"`
+	Position          Position `json:"position"`
+	Accepted          bool     `json:"accepted"`
+}
+
+func (ms *PlaceSuggestion) SetPlaceIdentifier(placeIdentifier string) {
+	ms.PlaceIdentifier = placeIdentifier
+}
+
+func (ms *PlaceSuggestion) SetAccepted(accepted bool) {
+	ms.Accepted = accepted
+}
