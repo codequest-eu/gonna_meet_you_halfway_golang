@@ -73,14 +73,14 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(&acceptData); err != nil {
 		return err
 	}
-	log.Println("AcceptData - " + acceptData)
+	log.Println(acceptData)
 
 	meetingID := acceptData.MeetingIdentifier
 	meetingSuggestion, err := h.store.GetMeetingSuggestion(meetingID)
 	if err != nil {
 		return err
 	}
-	log.Println("MeetingSuggestion - " + meetingSuggestion)
+	log.Println(meetingSuggestion)
 
 	meetingSuggestion.SetLocationB(acceptData.Location)
 	middlePoint, err := meeting.CalculateMiddlePoint(meetingSuggestion.LocationA, meetingSuggestion.LocationB)
