@@ -8,8 +8,9 @@ type InviteData struct {
 }
 
 type AcceptData struct {
-	Name     string   `json:"name"`
-	Location Position `json:"position"`
+	MeetingIdentifier string   `json:"meetingIdentifier"`
+	Name              string   `json:"name"`
+	Location          Position `json:"position"`
 }
 
 type NewMeeting struct {

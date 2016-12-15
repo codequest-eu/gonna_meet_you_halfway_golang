@@ -23,6 +23,10 @@ type Handler struct {
 	store       storage.Store
 }
 
+type redirectValue struct {
+	MeetingID string
+}
+
 func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 	var inviteData models.InviteData
 	if err := json.NewDecoder(r.Body).Decode(&inviteData); err != nil {
@@ -52,22 +56,23 @@ func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (h *Handler) acceptMeetingRedirect(w http.ResponseWriter, r *http.Request) error {
+	vars := mux.Vars(r)
+	meetingID := vars["meetingID"]
 	t, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		return err
 	}
-	return t.Execute(w, nil)
+	v := redirectValue{MeetingID: meetingID}
+	return t.Execute(w, v)
 }
 
 func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
-	vars := mux.Vars(r)
-	meetingID := vars["meetingID"]
-
 	var acceptData models.AcceptData
 	if err := json.NewDecoder(r.Body).Decode(&acceptData); err != nil {
 		return err
 	}
 
+	meetingID := acceptData.MeetingIdentifier
 	meetingSuggestion, err := h.store.GetMeetingSuggestion(meetingID)
 	if err != nil {
 		return err
