@@ -50,7 +50,7 @@ func (mq *mqttBroadcaster) Publish(v interface{}, topic string) error {
 		return err
 	}
 	fmt.Println(string(message))
-	token := mq.client.Publish(topic, byte(1), false, message)
+	token := mq.client.Publish(topic, byte(1), true, message)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
 	}

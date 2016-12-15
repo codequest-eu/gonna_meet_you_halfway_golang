@@ -7,8 +7,6 @@ import (
 
 	"log"
 
-	"time"
-
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/meeting"
@@ -106,13 +104,9 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	log.Println(meetingSuggestion)
 	log.Println(venues)
 
-	go func() {
-		time.Sleep(time.Second * 5)
-		if err := h.broadcaster.Publish(venues, topics.SuggestionsTopicName); err != nil {
-			return err
-		}
-		log.Println("Published")
-	}()
+	if err := h.broadcaster.Publish(venues, topics.SuggestionsTopicName); err != nil {
+		return err
+	}
 
 	meeting := models.NewMeeting{
 		Identifier: meetingID,
