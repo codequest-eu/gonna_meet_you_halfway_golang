@@ -5,10 +5,21 @@
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
 </head>
-<body onload="redirect()">
+<body onload="onLoad()">
+    <div class="alert"></div>
 <script type="text/javascript">
-    function redirect(){
-        window.location = "halfway://{{.MeetingID}}";
+    function onLoad(){
+        var userAgent = window.navigator.userAgent.toLowerCase();
+        var ios = /iphone|ipod|ipad/.test(userAgent);
+        if (ios) {
+            window.location = "halfway://{{.MeetingID}}";
+        } else {
+            var element = document.getElementById("alert");
+            var alertElement = document.createElement("p")
+            var alertMsg = document.createTextNode("This is new.");
+            alertElement.appendChild(alertMsg);
+            element.appendChild(alertElement);
+        }
     }
 </script>
 </body>
