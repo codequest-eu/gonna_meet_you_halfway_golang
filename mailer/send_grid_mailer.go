@@ -40,7 +40,7 @@ func (sgm *sendGridMailer) Mail(inviteData models.InviteData, meetingID string) 
 	return nil
 }
 
-func (sgm *sendGridMailer) buildInviteMail(tEmail string, sName string, sEmail string, meetingID string) []byte {
+func (sgm *sendGridMailer) buildInviteMail(sEmail string, sName string, tEmail string, meetingID string) []byte {
 	from := mail.NewEmail("[Half Way]", "support@halfway.io")
 	to := mail.NewEmail("", tEmail)
 	invitePath := util.InvitePath(meetingID)
