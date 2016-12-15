@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"net/http"
 
 	"fmt"
@@ -48,6 +49,14 @@ func (h *Handler) start(w http.ResponseWriter, r *http.Request) error {
 		Topics:     topics,
 	}
 	return json.NewEncoder(w).Encode(meeting)
+}
+
+func (h *Handler) acceptMeetingRedirect(w http.ResponseWriter, r *http.Request) error {
+	t, err := template.ParseFiles("templates/index.html")
+	if err != nil {
+		return err
+	}
+	return t.Execute(w, nil)
 }
 
 func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
