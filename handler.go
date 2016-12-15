@@ -5,8 +5,6 @@ import (
 	"html/template"
 	"net/http"
 
-	"fmt"
-
 	"log"
 
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
@@ -80,7 +78,6 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	log.Println(meetingSuggestion)
 
 	meetingSuggestion.SetLocationB(acceptData.Location)
 	middlePoint, err := meeting.CalculateMiddlePoint(meetingSuggestion.LocationA, meetingSuggestion.LocationB)
@@ -94,7 +91,6 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	meetingSuggestion.SetVenues(*venues)
-	fmt.Println(meetingSuggestion)
 
 	if err := h.store.SaveMeetingSuggestion(meetingID, meetingSuggestion); err != nil {
 		return err
@@ -105,7 +101,10 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	if err := h.broadcaster.Publish(meetingSuggestion, topics.SuggestionsTopicName); err != nil {
+	log.Println(meetingSuggestion)
+	log.Println(venues)
+
+	if err := h.broadcaster.Publish(venues, topics.SuggestionsTopicName); err != nil {
 		return err
 	}
 

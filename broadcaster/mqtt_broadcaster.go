@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"fmt"
+
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 )
 
@@ -47,6 +49,7 @@ func (mq *mqttBroadcaster) Publish(v interface{}, topic string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println(string(message))
 	token := mq.client.Publish(topic, byte(1), false, message)
 	if token.Wait() && token.Error() != nil {
 		return token.Error()
