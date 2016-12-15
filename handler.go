@@ -7,6 +7,8 @@ import (
 
 	"fmt"
 
+	"log"
+
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/meeting"
@@ -71,12 +73,15 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(&acceptData); err != nil {
 		return err
 	}
+	log.Println("AcceptData - " + acceptData)
 
 	meetingID := acceptData.MeetingIdentifier
 	meetingSuggestion, err := h.store.GetMeetingSuggestion(meetingID)
 	if err != nil {
 		return err
 	}
+	log.Println("MeetingSuggestion - " + meetingSuggestion)
+
 	meetingSuggestion.SetLocationB(acceptData.Location)
 	middlePoint, err := meeting.CalculateMiddlePoint(meetingSuggestion.LocationA, meetingSuggestion.LocationB)
 	if err != nil {
