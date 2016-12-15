@@ -50,8 +50,9 @@ type Position struct {
 }
 
 type Venue struct {
-	Name     string   `json:"name"`
-	Location Position `json:"position"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Location    Position `json:"position"`
 }
 
 type PlaceSuggestion struct {
