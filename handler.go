@@ -129,7 +129,7 @@ func (h *Handler) suggestMeetingLocation(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		return err
 	}
-	if err := h.broadcaster.Publish(placeSuggestion, topics.SuggestionsTopicName); err != nil {
+	if err := h.broadcaster.Publish(placeSuggestion, topics.MeetingLocationTopicName); err != nil {
 		return err
 	}
 
