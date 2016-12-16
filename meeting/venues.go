@@ -36,7 +36,7 @@ func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
 
 func buildURL(middlePoint models.Position) string {
 	pointParam := fmt.Sprintf("%v,%v", middlePoint.Latitude, middlePoint.Longitude)
-	return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=500&query=caffee"
+	return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100&query=caffee"
 }
 
 func getVenues(response map[string]interface{}) *[]models.Venue {
