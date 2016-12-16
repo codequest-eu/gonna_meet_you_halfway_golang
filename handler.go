@@ -85,6 +85,7 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	meetingSuggestion.SetCenter(*middlePoint)
+	log.Println(acceptData)
 
 	venues, err := meeting.AskForVenues(*middlePoint)
 	if err != nil {
