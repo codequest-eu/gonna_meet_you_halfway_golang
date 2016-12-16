@@ -14,6 +14,7 @@ import (
 var (
 	fsClientID     = os.Getenv("FOURSQUARE_CLIENT_ID")
 	fsClientSecret = os.Getenv("FOURSQUARE_CLIENT_SECRET")
+	gpAPIKey       = os.Getenv("GOOGLE_PLACES_KEY")
 )
 
 func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
@@ -36,27 +37,44 @@ func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
 
 func buildURL(middlePoint models.Position) string {
 	pointParam := fmt.Sprintf("%v,%v", middlePoint.Latitude, middlePoint.Longitude)
-	return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100&query=caffee,restaurant,bar&limit=10"
+	// return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100&query=caffee,restaurant,bar&limit=10"
+	return "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + pointParam + "&radius=200&types=food&key=" + gpAPIKey
 }
 
 func getVenues(response map[string]interface{}) *[]models.Venue {
 	var venues []models.Venue
 
-	respDic := response["response"].(map[string]interface{})
-	venuesArr := respDic["venues"].([]interface{})
-
-	for _, v := range venuesArr {
+	respDic := response["results"].([]interface{})
+	for _, v := range respDic {
 		venue := v.(map[string]interface{})
-		loc := venue["location"].(map[string]interface{})
+		g := venue["geometry"].(map[string]interface{})
+		l := g["location"].(map[string]float64)
 
-		l := models.Position{
-			Longitude: loc["lng"].(float64),
-			Latitude:  loc["lat"].(float64),
+		pos := models.Position{
+			Longitude: l["lng"],
+			Latitude:  l["lat"],
 		}
 		venues = append(venues, models.Venue{
 			Name:     venue["name"].(string),
-			Location: l,
+			Location: pos,
 		})
 	}
+
+	// respDic := response["response"].(map[string]interface{})
+	// venuesArr := respDic["venues"].([]interface{})
+
+	// for _, v := range venuesArr {
+	// 	venue := v.(map[string]interface{})
+	// 	loc := venue["location"].(map[string]interface{})
+
+	// 	l := models.Position{
+	// 		Longitude: loc["lng"].(float64),
+	// 		Latitude:  loc["lat"].(float64),
+	// 	}
+	// 	venues = append(venues, models.Venue{
+	// 		Name:     venue["name"].(string),
+	// 		Location: l,
+	// 	})
+	// }
 	return &venues
 }
