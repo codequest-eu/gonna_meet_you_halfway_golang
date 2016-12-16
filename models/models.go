@@ -56,12 +56,13 @@ type Venue struct {
 }
 
 type PlaceSuggestion struct {
-	MeetingIdentifier string   `json:"meetingIdentifier"`
-	PlaceIdentifier   string   `json:"placeIdentifier"`
-	Name              string   `json:"name"`
-	Description       string   `json:"description"`
-	Position          Position `json:"position"`
-	Accepted          bool     `json:"accepted"`
+	MeetingIdentifier       string   `json:"meetingIdentifier"`
+	PlaceIdentifier         string   `json:"placeIdentifier"`
+	SenderLocationTopicName string   `json:"senderLocationTopicName"`
+	Name                    string   `json:"name"`
+	Description             string   `json:"description"`
+	Position                Position `json:"position"`
+	Accepted                bool     `json:"accepted"`
 }
 
 func (ms *PlaceSuggestion) SetPlaceIdentifier(placeIdentifier string) {
