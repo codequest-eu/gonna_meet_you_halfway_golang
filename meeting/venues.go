@@ -14,7 +14,7 @@ import (
 var (
 	fsClientID     = os.Getenv("FOURSQUARE_CLIENT_ID")
 	fsClientSecret = os.Getenv("FOURSQUARE_CLIENT_SECRET")
-	gpAPIKey       = os.Getenv("GOOGLE_PLACES_KEY")
+	gpAPIKey       = os.Getenv("GOOGLE_DIRECTIONS_KEY")
 )
 
 func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
