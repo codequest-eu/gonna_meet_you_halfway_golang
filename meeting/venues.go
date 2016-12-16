@@ -41,7 +41,7 @@ func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
 func buildURL(middlePoint models.Position) string {
 	pointParam := fmt.Sprintf("%v,%v", middlePoint.Latitude, middlePoint.Longitude)
 	// return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100&query=caffee,restaurant,bar&limit=10"
-	return "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + pointParam + "&radius=200&types=cafe|bar|restaurant&key=" + gpAPIKey
+	return "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + pointParam + "&radius=500&types=cafe|bar|restaurant&key=" + gpAPIKey
 }
 
 func getVenues(response map[string]interface{}) *[]models.Venue {
