@@ -36,7 +36,7 @@ func AskForVenues(middlePoint models.Position) (*[]models.Venue, error) {
 
 func buildURL(middlePoint models.Position) string {
 	pointParam := fmt.Sprintf("%v,%v", middlePoint.Latitude, middlePoint.Longitude)
-	return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100"
+	return "https://api.foursquare.com/v2/venues/search?ll=" + pointParam + "&client_id=" + fsClientID + "&client_secret=" + fsClientSecret + "&v=20161020&m=foursquare&llAcc=100&query=caffee,restaurant"
 }
 
 func getVenues(response map[string]interface{}) *[]models.Venue {
@@ -45,7 +45,7 @@ func getVenues(response map[string]interface{}) *[]models.Venue {
 	respDic := response["response"].(map[string]interface{})
 	venuesArr := respDic["venues"].([]interface{})
 
-	for _, v := range venuesArr {
+	for i, v := range venuesArr {
 		venue := v.(map[string]interface{})
 		loc := venue["location"].(map[string]interface{})
 
@@ -53,10 +53,14 @@ func getVenues(response map[string]interface{}) *[]models.Venue {
 			Longitude: loc["lng"].(float64),
 			Latitude:  loc["lat"].(float64),
 		}
-		venues = append(venues, models.Venue{
-			Name:     venue["name"].(string),
-			Location: l,
-		})
+		if i < 10 {
+			venues = append(venues, models.Venue{
+				Name:     venue["name"].(string),
+				Location: l,
+			})
+		} else {
+			break
+		}
 	}
 	return &venues
 }
