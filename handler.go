@@ -5,8 +5,6 @@ import (
 	"html/template"
 	"net/http"
 
-	"log"
-
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/broadcaster"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/mailer"
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/meeting"
@@ -15,6 +13,7 @@ import (
 	"github.com/codequest-eu/gonna_meet_you_halfway_golang/util"
 	"github.com/gorilla/mux"
 	"github.com/satori/go.uuid"
+	"log"
 )
 
 type Handler struct {
@@ -71,7 +70,6 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	if err := json.NewDecoder(r.Body).Decode(&acceptData); err != nil {
 		return err
 	}
-	log.Println(acceptData)
 
 	meetingID := acceptData.MeetingIdentifier
 	meetingSuggestion, err := h.store.GetMeetingSuggestion(meetingID)
@@ -80,14 +78,17 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	}
 
 	meetingSuggestion.SetLocationB(acceptData.Location)
-	middlePoint, err := meeting.CalculateMiddlePoint(meetingSuggestion.LocationA, meetingSuggestion.LocationB)
+	ms, err := meeting.NewGService()
+	if err != nil {
+		return err
+	}
+	middlePoint, err := ms.CalculateMiddlePoint(meetingSuggestion.LocationA, meetingSuggestion.LocationB)
 	if err != nil {
 		return err
 	}
 	meetingSuggestion.SetCenter(*middlePoint)
-	log.Println(meetingSuggestion)
 
-	venues, err := meeting.AskForVenues(*middlePoint)
+	venues, err := ms.AskForPlaces(*middlePoint)
 	if err != nil {
 		return err
 	}
@@ -96,14 +97,12 @@ func (h *Handler) acceptMeeting(w http.ResponseWriter, r *http.Request) error {
 	if err := h.store.SaveMeetingSuggestion(meetingID, meetingSuggestion); err != nil {
 		return err
 	}
+	log.Println(meetingSuggestion)
 
 	topics, err := h.store.GetTopics(meetingID)
 	if err != nil {
 		return err
 	}
-
-	log.Println(meetingSuggestion)
-	log.Println(venues)
 
 	if err := h.broadcaster.Publish(venues, topics.SuggestionsTopicName); err != nil {
 		return err

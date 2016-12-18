@@ -12,12 +12,20 @@ import (
 
 var gdAPIKey = os.Getenv("GOOGLE_DIRECTIONS_KEY")
 
-func CalculateMiddlePoint(locationA models.Position, locationB models.Position) (*models.Position, error) {
+type GService struct {
+	client *maps.Client
+}
+
+func NewGService() (*GService, error) {
 	o := maps.WithAPIKey(gdAPIKey)
 	client, err := maps.NewClient(o)
 	if err != nil {
 		return nil, err
 	}
+	return &GService{client}, nil
+}
+
+func (gs *GService) CalculateMiddlePoint(locationA models.Position, locationB models.Position) (*models.Position, error) {
 	pointParamA := fmt.Sprintf("%v,%v", locationA.Latitude, locationA.Longitude)
 	pointParamB := fmt.Sprintf("%v,%v", locationB.Latitude, locationB.Longitude)
 	r := &maps.DirectionsRequest{
@@ -26,7 +34,7 @@ func CalculateMiddlePoint(locationA models.Position, locationB models.Position) 
 		Alternatives: false,
 		Mode:         maps.TravelModeWalking,
 	}
-	routes, _, err := client.Directions(context.Background(), r)
+	routes, _, err := gs.client.Directions(context.Background(), r)
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +42,40 @@ func CalculateMiddlePoint(locationA models.Position, locationB models.Position) 
 	totalDistance := calculateTotalDistance(routes)
 	middlePoint := evaluateMiddlePoint(routes, totalDistance)
 	return &middlePoint, nil
+}
+
+func (gs *GService) AskForPlaces(middlePoint models.Position) (*[]models.Venue, error) {
+	var venues []models.Venue
+	placesTypes := []maps.PlaceType{maps.PlaceTypeCafe, maps.PlaceTypeBar, maps.PlaceTypeRestaurant}
+
+	for _, t := range placesTypes {
+		req := maps.RadarSearchRequest {
+			Location: &maps.LatLng{middlePoint.Latitude, middlePoint.Longitude},
+			Radius: 200,
+			Type: t,
+		}
+		res, err := gs.client.RadarSearch(context.Background(), &req)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range res.Results {
+			pdReq := maps.PlaceDetailsRequest{p.PlaceID, ""}
+			d, err := gs.client.PlaceDetails(context.Background(), &pdReq)
+			if err != nil {
+				return nil, err
+			}
+			venue := models.Venue{
+				d.Name,
+				"",
+				models.Position{
+					d.Geometry.Location.Lat,
+					d.Geometry.Location.Lng,
+				},
+			}
+			venues = append(venues, venue)
+		}
+	}
+	return &venues, nil
 }
 
 func calculateTotalDistance(routes []maps.Route) int {
